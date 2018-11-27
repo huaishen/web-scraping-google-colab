@@ -10,7 +10,6 @@ import sys
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By 
-from selenium.webdriver.chrome.options import Options  
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -20,10 +19,8 @@ class gumtree_upload(object):
     
     # Initiate browser & define wait time, username, password and image path 
     def __init__(self,df,username,password,path):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--start-maximized")
-        self.browser = webdriver.Chrome(chrome_options=chrome_options)
+        self.browser = webdriver.PhantomJS()
+        self.browser.maximize_window()
         self.wait = WebDriverWait(self.browser, 8)
         self.df=df
         self.username=username
@@ -88,8 +85,8 @@ class gumtree_upload(object):
         # Title
         self.sendtext('Title', value['Title'])
         # Description
-        try:
-            self.wait.until(EC.presence_of_element_located((By.ID, "description-frame")))
+        '''
+        self.wait.until(EC.presence_of_element_located((By.ID, "description-frame")))
             #self.browser.switchTo().frame("description-frame")
             self.browser.switch_to.frame("description-frame")
         except:
@@ -99,8 +96,8 @@ class gumtree_upload(object):
         element.click()
         element.send_keys(value['Body'])
         self.browser.switch_to.default_content()
-        self.browser.save_screenshot('screenie.png')
-        #self.sendtext('Description',value['Body'])
+        '''
+        self.sendtext('Description',value['Body'])
         # Username
         #self.sendtext('UserName', value['UserName'])
         #self.sendtext('Email',value['Email'])
@@ -133,7 +130,6 @@ class gumtree_upload(object):
             print('Row {} is running...'.format(row),end=' ')
             self.log_in()
             self.fill_in_form(value)
-            #self.browser.save_screenshot('screenie_'+str(row)+'.png')
         print('Finished')
         self.browser.close()
             
