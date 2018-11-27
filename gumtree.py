@@ -18,7 +18,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class gumtree_upload(object):   
     
-    def __init__(self,df,username,password):
+    def __init__(self,df,username,password,path):
         chrome_options = Options()
         chrome_options.add_argument("--headless")
         chrome_options.add_argument("--start-maximized")
@@ -27,7 +27,8 @@ class gumtree_upload(object):
         self.df=df
         self.username=username
         self.password=password
-    
+        self.image_path=path
+        
     def log_in(self):
         self.browser.get('https://www.gumtree.sg/login.html')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
@@ -92,7 +93,7 @@ class gumtree_upload(object):
         self.browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
         self.sendtext('Phone',str(value['Phone']))
         # Photo Upload
-        self.browser.find_element_by_name('u').send_keys(r"C:\Users\LN043-HB\Pictures\{}.png".format(value['Image Name']))
+        self.browser.find_element_by_name('u').send_keys('{}/{}.jpg'.format(self.image_path,value['Image Name']))
         time.sleep(15)
         # Address
         self.sendtext('Address', value['Address'])
