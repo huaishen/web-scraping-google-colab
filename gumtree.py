@@ -41,7 +41,7 @@ class gumtree_upload(object):
         login_button.click()
         try:
             self.wait.until(EC.element_to_be_clickable((By.NAME,"q")))
-            print('Log in sucessfully...',end=' ')
+            print('Log in sucessfully',end=' ')
         except:
             sys.exit('Unable to log in')
             
@@ -130,7 +130,7 @@ class gumtree_upload(object):
     # Loop all the rows
     def automated_process(self):
         for row,value in self.df.iterrows():
-            print('Row {} is running...'.format(row+1),end=' ')
+            print('Row {} is running...'.format(row),end=' ')
             self.log_in()
             self.fill_in_form(value)
             #self.browser.save_screenshot('screenie_'+str(row)+'.png')
