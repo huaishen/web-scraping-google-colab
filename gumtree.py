@@ -17,6 +17,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class gumtree_upload(object):   
     
+    # Initiate browser & define wait time, username, password and image path 
     def __init__(self,df,username,password,path):
         self.browser = webdriver.PhantomJS()
         self.browser.maximize_window()
@@ -25,7 +26,8 @@ class gumtree_upload(object):
         self.username=username
         self.password=password
         self.image_path=path
-        
+    
+    # Log into gumtree to avoid activation    
     def log_in(self):
         self.browser.get('https://www.gumtree.sg/login.html')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
@@ -36,14 +38,16 @@ class gumtree_upload(object):
         login_button.click()
         try:
             self.wait.until(EC.element_to_be_clickable((By.NAME,"q")))
+            print('Log in sucessfully',end=' ')
         except:
             sys.exit('Unable to log in')
             
-        
+    # wait element to appear and click on it 
     def wait_and_click(self,text):
         button=self.wait.until(EC.element_to_be_clickable((By.XPATH,"//li[@class='nav-item ']//*[contains(text(), '{}')]".format(text))))
         self.browser.execute_script("arguments[0].click();", button)
     
+    # Wait textbox to appear and send inputs
     def sendtext(self,elementname, value):
         if (value=='') | (value==' '):
             return
@@ -52,6 +56,7 @@ class gumtree_upload(object):
         element.click()
         element.send_keys(value)
     
+    # Wait dropdown list to appear and select items
     def selectvalue(self,elementname, value):
         if (value=='') | (value==' '):
             return
@@ -59,6 +64,7 @@ class gumtree_upload(object):
         select = Select(select_item)
         select.select_by_visible_text(value)
     
+    # Fill in ads form and submit 
     def fill_in_form(self,value):
         self.browser.get('https://www.gumtree.sg/post.html')
         self.wait_and_click('Jobs')
@@ -79,18 +85,30 @@ class gumtree_upload(object):
         # Title
         self.sendtext('Title', value['Title'])
         # Description
-        self.browser.switch_to.frame("description-frame")
+        '''
+        self.wait.until(EC.presence_of_element_located((By.ID, "description-frame")))
+            #self.browser.switchTo().frame("description-frame")
+            self.browser.switch_to.frame("description-frame")
+        except:
+            self.browser.save_screenshot('screenshot.png')
+            return 
         element = self.browser.find_element_by_id('rte')
         element.click()
         element.send_keys(value['Body'])
         self.browser.switch_to.default_content()
+        '''
+        self.sendtext('Description',value['Body'])
         # Username
         #self.sendtext('UserName', value['UserName'])
         #self.sendtext('Email',value['Email'])
+        
+        # Phone Number
         self.browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
         self.sendtext('Phone',str(value['Phone']))
         # Photo Upload
-        self.browser.find_element_by_name('u').send_keys('{}/{}.jpg'.format(self.image_path,value['Image Name']))
+        image_upload=self.browser.find_element_by_name('u')
+        self.browser.execute_script("arguments[0].removeAttribute('multiple')",image_upload)
+        image_upload.send_keys('{}/{}.jpg'.format(self.image_path,value['Image Name']))
         time.sleep(15)
         # Address
         self.sendtext('Address', value['Address'])
@@ -103,7 +121,10 @@ class gumtree_upload(object):
             print('Ads has been published successfully')
         except:
             print('Unsuccessful')
+        # Clear cookies to avoid pre-settings of job location 
         self.browser.delete_all_cookies()
+        
+    # Loop all the rows
     def automated_process(self):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row),end=' ')
