@@ -9,8 +9,7 @@ import time
 import sys
 
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options  
+from selenium.webdriver.common.by import By 
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -19,10 +18,8 @@ from selenium.webdriver.support import expected_conditions as EC
 class gumtree_upload(object):   
     
     def __init__(self,df,username,password,path):
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--start-maximized")
-        self.browser = webdriver.Chrome(chrome_options=chrome_options)
+        self.browser = webdriver.PhantomJS()
+        self.browser.maximize_window()
         self.wait = WebDriverWait(self.browser, 8)
         self.df=df
         self.username=username
