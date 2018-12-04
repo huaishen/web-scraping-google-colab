@@ -44,9 +44,11 @@ class gumtree_upload(object):
             
     # wait element to appear and click on it 
     def wait_and_click(self,text):
+        self.error_column=text
         button=self.wait.until(EC.element_to_be_clickable((By.XPATH,"//li[@class='nav-item ']//*[contains(text(), '{}')]".format(text))))
         self.browser.execute_script("arguments[0].click();", button)
-    
+
+        
     # Wait textbox to appear and send inputs
     def sendtext(self,elementname, value):
         if (value=='') | (value==' '):
@@ -66,64 +68,73 @@ class gumtree_upload(object):
     
     # Fill in ads form and submit 
     def fill_in_form(self,value):
-        self.browser.get('https://www.gumtree.sg/post.html')
-        self.wait_and_click('Jobs')
-        self.wait_and_click('Ad-hoc / Part-time Jobs')
-        self.wait_and_click(value['Category'])
-        self.wait_and_click(value['Location 1'])
-        self.wait_and_click(value['Location 2'])
-        # Job type
-        self.selectvalue('JobType', value['JobType'])
-        # Company Name
-        self.sendtext('CompanyName', value['CompanyName'])
-        # Company Website
-        self.sendtext('CompanyWebsite', value['CompanyWebsite'])
-        # EA License Number
-        self.sendtext('EALicenseNumber', value['EALicenseNumber'])
-        # Education Level
-        self.selectvalue('EducationLevel', value['EducationLevel'])
-        # Title
-        self.sendtext('Title', value['Title'])
-        # Description
-        '''
-        self.wait.until(EC.presence_of_element_located((By.ID, "description-frame")))
-            #self.browser.switchTo().frame("description-frame")
-            self.browser.switch_to.frame("description-frame")
-        except:
-            self.browser.save_screenshot('screenshot.png')
-            return 
-        element = self.browser.find_element_by_id('rte')
-        element.click()
-        element.send_keys(value['Body'])
-        self.browser.switch_to.default_content()
-        '''
-        self.sendtext('Description',value['Body'])
-        # Username
-        #self.sendtext('UserName', value['UserName'])
-        #self.sendtext('Email',value['Email'])
-        
-        # Phone Number
-        self.browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
-        self.sendtext('Phone',str(value['Phone']))
-        # Photo Upload
-        image_upload=self.browser.find_element_by_name('u')
-        self.browser.execute_script("arguments[0].removeAttribute('multiple')",image_upload)
-        image_upload.send_keys('{}/{}.jpg'.format(self.image_path,value['Image Name']))
-        time.sleep(15)
-        # Address
-        self.sendtext('Address', value['Address'])
-        # Submission
-        submit_button=self.wait.until(EC.element_to_be_clickable((By.ID,'postSubmit')))
-        self.browser.execute_script("arguments[0].scrollIntoView();", submit_button)
-        submit_button.click()
         try:
-            self.wait.until(EC.presence_of_element_located((By.XPATH,'//span[@class="icon-gl-message-success"]')))
-            print('Ads has been published successfully')
+            self.browser.get('https://www.gumtree.sg/post.html')
+            self.error_column=''
+            self.wait_and_click('Jobs')
+            self.wait_and_click('Ad-hoc / Part-time Jobs')
+            self.wait_and_click(value['Category'])
+            self.wait_and_click(value['Location 1'])
+            self.wait_and_click(value['Location 2'])
+            self.error_column=''
+            # Job type
+            self.selectvalue('JobType', value['JobType'])
+            # Company Name
+            self.sendtext('CompanyName', value['CompanyName'])
+            # Company Website
+            self.sendtext('CompanyWebsite', value['CompanyWebsite'])
+            # EA License Number
+            self.sendtext('EALicenseNumber', value['EALicenseNumber'])
+            # Education Level
+            self.selectvalue('EducationLevel', value['EducationLevel'])
+            # Title
+            self.sendtext('Title', value['Title'])
+            # Description
+            '''
+            self.wait.until(EC.presence_of_element_located((By.ID, "description-frame")))
+                #self.browser.switchTo().frame("description-frame")
+                self.browser.switch_to.frame("description-frame")
+            except:
+                self.browser.save_screenshot('screenshot.png')
+                return 
+            element = self.browser.find_element_by_id('rte')
+            element.click()
+            element.send_keys(value['Body'])
+            self.browser.switch_to.default_content()
+            '''
+            self.sendtext('Description',value['Body'])
+            # Username
+            #self.sendtext('UserName', value['UserName'])
+            #self.sendtext('Email',value['Email'])
+            
+            # Phone Number
+            self.browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
+            self.sendtext('Phone',str(value['Phone']))
+            # Photo Upload
+            image_upload=self.browser.find_element_by_name('u')
+            self.browser.execute_script("arguments[0].removeAttribute('multiple')",image_upload)
+            image_upload.send_keys('{}/{}.jpg'.format(self.image_path,value['Image Name']))
+            time.sleep(15)
+            # Address
+            self.sendtext('Address', value['Address'])
+            # Submission
+            submit_button=self.wait.until(EC.element_to_be_clickable((By.ID,'postSubmit')))
+            self.browser.execute_script("arguments[0].scrollIntoView();", submit_button)
+            submit_button.click()
+            try:
+                self.wait.until(EC.presence_of_element_located((By.XPATH,'//span[@class="icon-gl-message-success"]')))
+                print('Ads has been published successfully')
+            except:
+                print('Unsuccessful')
+            # Clear cookies to avoid pre-settings of job location 
+            self.browser.delete_all_cookies()
         except:
-            print('Unsuccessful')
-        # Clear cookies to avoid pre-settings of job location 
-        self.browser.delete_all_cookies()
-        
+            if self.error_column=='':
+                print('An unexpected error occured.')
+            else:
+                print('An error occured, wrong input:{}'.format(self.error_column))
+            self.browser.delete_all_cookies()
+            return 
     # Loop all the rows
     def automated_process(self):
         for row,value in self.df.iterrows():
