@@ -29,6 +29,7 @@ class gumtree_upload(object):
     
     # Log into gumtree to avoid activation    
     def log_in(self):
+        self.browser.delete_all_cookies()
         self.browser.get('https://www.gumtree.sg/login.html')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
         email_input.send_keys(self.username)
@@ -124,16 +125,15 @@ class gumtree_upload(object):
             try:
                 self.wait.until(EC.presence_of_element_located((By.XPATH,'//span[@class="icon-gl-message-success"]')))
                 print('Ads has been published successfully')
+                time.sleep(5)
             except:
-                print('Unsuccessful')
+                print('An error occured during submission')
             # Clear cookies to avoid pre-settings of job location 
-            self.browser.delete_all_cookies()
         except:
             if self.error_column=='':
                 print('An unexpected error occured.')
             else:
                 print('An error occured, wrong input:{}'.format(self.error_column))
-            self.browser.delete_all_cookies()
             return 
     # Loop all the rows
     def automated_process(self):
