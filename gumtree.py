@@ -19,9 +19,6 @@ class gumtree_upload(object):
     
     # Initiate browser & define wait time, username, password and image path 
     def __init__(self,df,username,password,path):
-        self.browser = webdriver.PhantomJS()
-        self.browser.maximize_window()
-        self.wait = WebDriverWait(self.browser, 8)
         self.df=df
         self.username=username
         self.password=password
@@ -29,7 +26,13 @@ class gumtree_upload(object):
     
     # Log into gumtree to avoid activation    
     def log_in(self):
-        self.browser.delete_all_cookies()
+        try:
+            self.browser.close()
+        except:
+            pass
+        self.browser = webdriver.PhantomJS()
+        self.browser.maximize_window()
+        self.wait = WebDriverWait(self.browser, 8)
         self.browser.get('https://www.gumtree.sg/login.html')
         self.browser.save_screenshot("1.png")
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
@@ -140,6 +143,7 @@ class gumtree_upload(object):
     def automated_process(self):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row+1),end=' ')
+
             self.log_in()
             self.fill_in_form(value)
         print('Finished')
