@@ -31,6 +31,7 @@ class gumtree_upload(object):
     def log_in(self):
         self.browser.delete_all_cookies()
         self.browser.get('https://www.gumtree.sg/login.html')
+        self.browser.save_screenshot("1.png")
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
         email_input.send_keys(self.username)
         pwd_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'password')))
