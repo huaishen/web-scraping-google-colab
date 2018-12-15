@@ -130,13 +130,13 @@ class gumtree_upload(object):
                 print('Ads has been published successfully')
                 time.sleep(8)
             except:
-                print('An error occured during submission')
+                print('An error occurred during submission')
             # Clear cookies to avoid pre-settings of job location 
         except:
             if self.error_column=='':
-                print('An unexpected error occured.')
+                print('An unexpected error occurred.')
             else:
-                print('An error occured, wrong input:{}'.format(self.error_column))
+                print('An error occurred, wrong input:{}'.format(self.error_column))
             return 
     # Loop all the rows
     def automated_process(self):
