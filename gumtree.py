@@ -34,7 +34,6 @@ class gumtree_upload(object):
         self.browser.maximize_window()
         self.wait = WebDriverWait(self.browser, 8)
         self.browser.get('https://www.gumtree.sg/login.html')
-        self.browser.save_screenshot("1.png")
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
         email_input.send_keys(self.username)
         pwd_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'password')))
@@ -129,7 +128,7 @@ class gumtree_upload(object):
             try:
                 self.wait.until(EC.presence_of_element_located((By.XPATH,'//span[@class="icon-gl-message-success"]')))
                 print('Ads has been published successfully')
-                time.sleep(5)
+                time.sleep(8)
             except:
                 print('An error occured during submission')
             # Clear cookies to avoid pre-settings of job location 
