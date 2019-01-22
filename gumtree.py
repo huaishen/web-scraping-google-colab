@@ -45,11 +45,44 @@ class gumtree_upload(object):
             print('Log in sucessfully...',end=' ')
         except:
             sys.exit('Unable to log in')
-            
+    
+    def delete_same_ads(self, value):
+        profile=self.wait.until(EC.element_to_be_clickable((By.XPATH,
+                        '//div[@class="profile"]/a[@href="/my/ads.html"]')))
+        profile.click()
+        try:
+            self.wait.until(EC.presence_of_element_located((By.XPATH,
+            '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
+        except:
+            print('No ads has been posted in your list',end='...')
+            return
+        check=0
+        while True:
+            ads=self.browser.find_elements_by_xpath(
+            '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')
+            for ad in ads:
+                if value['title']==ad.find_element_by_class_name('title').text:
+                    ad.find_element_by_class_name('delete').click()
+                    self.browser.switch_to_alert().accept()
+                    check=1
+                    print('The same ad has been removed',end='...')
+                    time.sleep(3)
+                    break
+            next_page=len(self.browser.find_elements_by_xpath('//a[@class="next follows"]'))
+            if (next_page==0) | (check==1):
+                break
+            elif next_page!=0:
+                next_page[0].click()
+                self.wait.until(EC.presence_of_element_located((By.XPATH,
+            '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
+        if check==0:
+            print('No same ad was found',end='...')
+
     # wait element to appear and click on it 
     def wait_and_click(self,text):
         self.error_column=text
-        button=self.wait.until(EC.element_to_be_clickable((By.XPATH,"//li[@class='nav-item ']//*[contains(text(), '{}')]".format(text))))
+        button=self.wait.until(EC.element_to_be_clickable((By.XPATH,
+            "//li[@class='nav-item ']//*[contains(text(), '{}')]".format(text))))
         self.browser.execute_script("arguments[0].click();", button)
 
         
@@ -142,8 +175,8 @@ class gumtree_upload(object):
     def automated_process(self):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row+1),end=' ')
-
             self.log_in()
+            self.delete_same_ads(value)
             self.fill_in_form(value)
         print('Finished')
         self.browser.close()
