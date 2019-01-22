@@ -47,9 +47,7 @@ class gumtree_upload(object):
             sys.exit('Unable to log in')
     
     def delete_same_ads(self, value):
-        profile=self.wait.until(EC.element_to_be_clickable((By.XPATH,
-                        '//div[@class="profile"]/a[@href="/my/ads.html"]')))
-        profile.click()
+        self.browser.get('https://www.gumtree.sg/my/ads.html')
         try:
             self.wait.until(EC.presence_of_element_located((By.XPATH,
             '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
