@@ -59,7 +59,7 @@ class gumtree_upload(object):
             ads=self.browser.find_elements_by_xpath(
             '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')
             for ad in ads:
-                if value['title']==ad.find_element_by_class_name('title').text:
+                if value['Title']==ad.find_element_by_class_name('title').text:
                     ad.find_element_by_class_name('delete').click()
                     self.browser.switch_to_alert().accept()
                     check=1
