@@ -30,7 +30,8 @@ class gumtree_upload(object):
             self.browser.close()
         except:
             pass
-        self.browser = webdriver.PhantomJS()
+        capabilities = {'handlesAlerts': 'True'}
+        self.browser = webdriver.PhantomJS(desired_capabilities=capabilities)
         self.browser.maximize_window()
         self.wait = WebDriverWait(self.browser, 8)
         self.browser.get('https://www.gumtree.sg/login.html')
@@ -174,7 +175,7 @@ class gumtree_upload(object):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row+1),end=' ')
             self.log_in()
-            self.delete_same_ads(value)
+            #self.delete_same_ads(value)
             self.fill_in_form(value)
         print('Finished')
         self.browser.close()
