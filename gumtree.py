@@ -37,7 +37,7 @@ class gumtree_upload(object):
         chrome_options.add_argument("--start-maximized")
         self.browser = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
         self.wait = WebDriverWait(self.browser, 8)
-        self.browser.get('https://www.gumtree.sg/login.html')
+        self.browser.get('https://www.gumtree.sg/my/ads.html?ad=at')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
         email_input.send_keys(self.username)
         pwd_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'password')))
@@ -90,7 +90,7 @@ class gumtree_upload(object):
         
     # Wait textbox to appear and send inputs
     def sendtext(self,elementname, value):
-        if (value=='') | (value==' '):
+        if (value=='') | (value==' ') | pd.isnull(value):
             return
         element = self.wait.until(EC.element_to_be_clickable((By.NAME,elementname)))
         self.browser.execute_script("arguments[0].scrollIntoView();", element)
@@ -141,11 +141,11 @@ class gumtree_upload(object):
             element.send_keys(value['Body'])
             self.browser.switch_to.default_content()
             '''
-            self.sendtext('Description',value['Body'])
-            # Username
-            #self.sendtext('UserName', value['UserName'])
-            #self.sendtext('Email',value['Email'])
-            
+            self.browser.switch_to.frame("description-frame")
+            element = self.browser.find_element_by_id('rte')
+            element.click()
+            element.send_keys(value['Body'])
+            self.browser.switch_to.default_content()
             # Phone Number
             self.browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
             self.sendtext('Phone',str(value['Phone']))
@@ -178,7 +178,7 @@ class gumtree_upload(object):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row+1),end=' ')
             self.log_in()
-            #self.delete_same_ads(value)
+            self.delete_same_ads(value)
             self.fill_in_form(value)
         print('Finished')
         self.browser.close()
