@@ -30,9 +30,12 @@ class gumtree_upload(object):
             self.browser.close()
         except:
             pass
-        capabilities = {'handlesAlerts': 'True'}
-        self.browser = webdriver.PhantomJS(desired_capabilities=capabilities)
-        self.browser.maximize_window()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument("--start-maximized")
+        self.browser = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
         self.wait = WebDriverWait(self.browser, 8)
         self.browser.get('https://www.gumtree.sg/login.html')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
