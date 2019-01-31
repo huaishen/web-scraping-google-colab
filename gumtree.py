@@ -30,14 +30,11 @@ class gumtree_upload(object):
             self.browser.close()
         except:
             pass
-        chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')
-        chrome_options.add_argument('--no-sandbox')
-        chrome_options.add_argument('--disable-dev-shm-usage')
-        chrome_options.add_argument("--start-maximized")
-        self.browser = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
+        capabilities = {'handlesAlerts': 'True'}
+        self.browser = webdriver.PhantomJS(desired_capabilities=capabilities)
+        self.browser.maximize_window()
         self.wait = WebDriverWait(self.browser, 8)
-        self.browser.get('https://www.gumtree.sg/my/ads.html?ad=at')
+        self.browser.get('https://www.gumtree.sg/login.html')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
         email_input.send_keys(self.username)
         pwd_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'password')))
@@ -90,7 +87,7 @@ class gumtree_upload(object):
         
     # Wait textbox to appear and send inputs
     def sendtext(self,elementname, value):
-        if (value=='') | (value==' ') | pd.isnull(value):
+        if (value=='') | (value==' '):
             return
         element = self.wait.until(EC.element_to_be_clickable((By.NAME,elementname)))
         self.browser.execute_script("arguments[0].scrollIntoView();", element)
@@ -141,11 +138,11 @@ class gumtree_upload(object):
             element.send_keys(value['Body'])
             self.browser.switch_to.default_content()
             '''
-            self.browser.switch_to.frame("description-frame")
-            element = self.browser.find_element_by_id('rte')
-            element.click()
-            element.send_keys(value['Body'])
-            self.browser.switch_to.default_content()
+            self.sendtext('Description',value['Body'])
+            # Username
+            #self.sendtext('UserName', value['UserName'])
+            #self.sendtext('Email',value['Email'])
+            
             # Phone Number
             self.browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
             self.sendtext('Phone',str(value['Phone']))
@@ -178,7 +175,7 @@ class gumtree_upload(object):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row+1),end=' ')
             self.log_in()
-            self.delete_same_ads(value)
+            #self.delete_same_ads(value)
             self.fill_in_form(value)
         print('Finished')
         self.browser.close()
