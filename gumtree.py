@@ -30,9 +30,11 @@ class gumtree_upload(object):
             self.browser.close()
         except:
             pass
-        capabilities = {'handlesAlerts': 'True'}
-        self.browser = webdriver.PhantomJS(desired_capabilities=capabilities)
-        self.browser.maximize_window()
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        chrome_options.add_argument("--start-maximized")
+        self.browser = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
         self.wait = WebDriverWait(self.browser, 8)
         self.browser.get('https://www.gumtree.sg/login.html')
         email_input=self.wait.until(EC.element_to_be_clickable((By.NAME,'email')))
@@ -48,7 +50,7 @@ class gumtree_upload(object):
             sys.exit('Unable to log in')
     
     def delete_same_ads(self, value):
-        self.browser.get('https://www.gumtree.sg/my/ads.html')
+        self.browser.get('https://www.gumtree.sg/my/ads.html?ad=at')
         try:
             self.wait.until(EC.presence_of_element_located((By.XPATH,
             '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
@@ -138,7 +140,12 @@ class gumtree_upload(object):
             element.send_keys(value['Body'])
             self.browser.switch_to.default_content()
             '''
-            self.sendtext('Description',value['Body'])
+            self.browser.switch_to.frame("description-frame")
+            element = self.browser.find_element_by_id('rte')
+            element.click()
+            element.send_keys(value['Body'])
+            self.browser.switch_to.default_content()
+            #self.sendtext('Description',value['Body'])
             # Username
             #self.sendtext('UserName', value['UserName'])
             #self.sendtext('Email',value['Email'])
@@ -175,7 +182,7 @@ class gumtree_upload(object):
         for row,value in self.df.iterrows():
             print('Row {} is running...'.format(row+1),end=' ')
             self.log_in()
-            #self.delete_same_ads(value)
+            self.delete_same_ads(value)
             self.fill_in_form(value)
         print('Finished')
         self.browser.close()
