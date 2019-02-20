@@ -80,7 +80,7 @@ class gumtree_upload(object):
             print('No same ad was found',end='...')
             
     def activate_new_ad(self):
-        self.browser.get('https://www.gumtree.sg/my/ads.html?ad=at')
+        self.browser.get('https://www.gumtree.sg/my/ads.html?ad=pd')
         try:
             self.wait.until(EC.presence_of_element_located((By.XPATH,
             '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
