@@ -78,7 +78,22 @@ class gumtree_upload(object):
             '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
         if check==0:
             print('No same ad was found',end='...')
-
+            
+    def activate_new_ad(self):
+        self.browser.get('https://www.gumtree.sg/my/ads.html?ad=at')
+        try:
+            self.wait.until(EC.presence_of_element_located((By.XPATH,
+            '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')))
+        except:
+            print('No ads is pending',end='...')
+            return
+        ad=self.browser.find_element_by_xpath(
+            '//div[contains(@class,"commercial") and contains(@class,"clearfix")]')
+        edit_button=ad.find_element_by_class_name('edit')
+        edit_button.click()
+        submit_button=self.wait.until(EC.element_to_be_clickable((By.ID,'postSubmit')))
+        submit_button.click()
+        
     # wait element to appear and click on it 
     def wait_and_click(self,text):
         self.error_column=text
@@ -167,7 +182,7 @@ class gumtree_upload(object):
             try:
                 self.wait.until(EC.presence_of_element_located((By.XPATH,'//span[@class="icon-gl-message-success"]')))
                 print('Ads has been published successfully')
-                time.sleep(8)
+                time.sleep(5)
             except:
                 print('An error occurred during submission')
             # Clear cookies to avoid pre-settings of job location 
@@ -177,6 +192,7 @@ class gumtree_upload(object):
             else:
                 print('An error occurred, wrong input:{}'.format(self.error_column))
             return 
+        
     # Loop all the rows
     def automated_process(self):
         for row,value in self.df.iterrows():
@@ -184,6 +200,7 @@ class gumtree_upload(object):
             self.log_in()
             self.delete_same_ads(value)
             self.fill_in_form(value)
+            self.activate_new_ad()
         print('Finished')
         self.browser.close()
             

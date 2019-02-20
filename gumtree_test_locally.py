@@ -21,7 +21,13 @@ from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+username='lhsjj0109@yeah.net'
+password='lhs960109'
 
+df=pd.read_excel('excel/Gumtree_Template_HS.xlsx')
+value=df.iloc[1]
+image_path='C:\\Users\\LN043-HB\\Pictures'
+value['Image Name']='mooncake'
 class gumtree_upload(object):   
     
     # Initiate browser & define wait time, username, password and image path 
@@ -38,8 +44,7 @@ class gumtree_upload(object):
         except:
             pass
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')
-        #chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument("--start-maximized")
         browser = webdriver.Chrome('chromedriver',chrome_options=chrome_options)
@@ -160,13 +165,13 @@ class gumtree_upload(object):
             browser.execute_script("document.getElementsByName('Phone')[0].style.display = 'block';")
             sendtext('Phone',str(value['Phone']))
             # Photo Upload
-            image_upload=browser.find_element_by_name('u')
+            image_upload=browser.find_element_by_id('pictures')
             browser.execute_script("arguments[0].removeAttribute('multiple')",image_upload)
             image_upload.send_keys('{}/{}.png'.format(image_path,value['Image Name']))
             time.sleep(15)
             browser.execute_script("arguments[0].scrollIntoView();", image_upload)
             browser.save_screenshot('1.png')
-            browser.execute_script("document.getElementById('loading').style.display = 'none';")
+            #browser.execute_script("document.getElementById('loading').style.display = 'none';")
             # Address
             sendtext('Address', value['Address'])
             # Submission
